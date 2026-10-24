@@ -4,6 +4,7 @@ import { api } from "../../scripts/api.js";
 const LOAD = "Kandinsky6MotionContextLoadLatent";
 const SAVE = "Kandinsky6MotionContextSaveLatent";
 const CHAIN = "Kandinsky6MotionContextChain";
+const MC = "Kandinsky6MotionContext";
 const MAX = 9999;
 
 const CSS = `
@@ -66,6 +67,11 @@ function findPair(ctrl) {
   const nodes = graphNodes(graph);
   const loads = nodes.filter((n) => n.comfyClass === LOAD);
   const saves = nodes.filter((n) => n.comfyClass === SAVE);
+  const mcs = nodes.filter((n) => n.comfyClass === MC);
+  // The Motion Context node (whose clip_index selects the custom-audio
+  // window) usually sits outside the Load/Save/Chain group, so fall back to
+  // the single one in the graph; a group-local one wins when present.
+  let mc = mcs.length === 1 ? mcs[0] : null;
   for (const g of groupList(graph)) {
     if (!inGroup(g, ctrl)) continue;
     const members = groupMembers(g);
@@ -73,11 +79,13 @@ function findPair(ctrl) {
     const load = pool.find((n) => n.comfyClass === LOAD);
     const save = pool.find((n) => n.comfyClass === SAVE);
     if (load && save) {
-      return { load, save };
+      const gmc = pool.find((n) => n.comfyClass === MC);
+      if (gmc) mc = gmc;
+      return { load, save, mc };
     }
   }
   if (loads.length === 1 && saves.length === 1) {
-    return { load: loads[0], save: saves[0] };
+    return { load: loads[0], save: saves[0], mc };
   }
   return null;
 }
@@ -214,6 +222,9 @@ function advance(ctrl) {
   if (save < 1) save = 1;
   writeClip(pair.load, Math.min(load, MAX));
   writeClip(pair.save, Math.min(save, MAX));
+  // The custom-audio window is selected by the Motion Context clip_index,
+  // which tracks the Load index: clip N plays window N.
+  if (pair.mc) writeClip(pair.mc, Math.min(load, MAX));
   app.graph?.setDirtyCanvas?.(true, true);
   paint(ctrl);
   return true;
@@ -224,6 +235,7 @@ function resetFirst(ctrl) {
   if (!pair) return false;
   writeClip(pair.load, 0);
   writeClip(pair.save, 1);
+  if (pair.mc) writeClip(pair.mc, 0);
   app.graph?.setDirtyCanvas?.(true, true);
   paint(ctrl);
   return true;

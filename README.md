@@ -114,10 +114,13 @@ a few milliseconds per join, never accumulating.
 ## Chaining
 
 First clip: Load `0` / Save `1`. Next: Load `1` / Save `2`, and so on.
-`K6 Motion Context Chain` advances the pair and queues (use its Run/Re-roll
-instead of ComfyUI's Run for chained graphs); `Chain` is Approve on a loop,
-`segments` caps how many clips it runs (0 = until Stop), `Reset` sets
-Load 0 / Save 1, `Clear latents` deletes the numbered slots.
+`K6 Motion Context Chain` advances Load, Save, and the Motion Context
+`clip_index` (which selects the custom-audio window, so the track advances
+clip by clip) and queues (use its Run/Re-roll instead of ComfyUI's Run for
+chained graphs); `Chain` is Approve on a loop, `segments` caps how many clips
+it runs (0 = until Stop), `Reset` sets Load 0 / Save 1 / clip_index 0,
+`Clear latents` deletes the numbered slots. Click `Reset` before a fresh
+chain so the first clip plays the start of the track.
 
 ## Tests
 
