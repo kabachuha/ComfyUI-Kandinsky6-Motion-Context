@@ -410,17 +410,21 @@ class Kandinsky6MotionContextTrim:
 
     def trim(self, images, trim_frames, audio=None, trim_samples=0,
              fps=24.0, match_tail=True):
-        if images.ndim != 5:
+        # the VAE Decode node collapses the batch and delivers
+        # [T, H, W, C]; a raw vae.decode (the e2e harness) delivers
+        # [B, T, H, W, C]
+        if images.ndim not in (4, 5):
             raise ValueError(
                 "k6_motion_context: trim expects the decoded frame stack "
-                "[B, T, H, W, C] from VAE Decode, got %d dims." % images.ndim)
+                "[T, H, W, C] or [B, T, H, W, C], got %d dims." % images.ndim)
+        frame_axis = images.ndim - 4  # 0 for [T, H, W, C], 1 for [B, T, H, W, C]
         n = max(0, int(trim_frames))
-        total = int(images.shape[1])
+        total = int(images.shape[frame_axis])
         if n >= total:
             raise ValueError(
                 "k6_motion_context: asked to trim %d frames from a %d frame "
                 "clip." % (n, total))
-        out_images = images[:, n:] if n else images
+        out_images = images.narrow(frame_axis, n, total - n) if n else images
 
         out_audio = audio
         if audio is not None:

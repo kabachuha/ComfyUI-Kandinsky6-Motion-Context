@@ -229,6 +229,14 @@ def test_trim_drops_picture_and_sound_together():
     assert out_audio["waveform"].shape[-1] == want
 
 
+def test_trim_accepts_the_decode_nodes_frame_stack():
+    # the VAE Decode node collapses [B, T, H, W, C] to a [T, H, W, C] batch
+    images = torch.rand(121, 64, 64, 3)
+    out_images, out_audio = nodes.Kandinsky6MotionContextTrim().trim(images, 21)
+    assert out_images.shape[0] == 100
+    assert out_audio is None
+
+
 def test_trim_without_exact_samples_falls_back_to_fps():
     images = torch.rand(1, 121, 64, 64, 3)
     audio = {"waveform": torch.ones(1, 1, CLIP_SAMPLES), "sample_rate": SR}
