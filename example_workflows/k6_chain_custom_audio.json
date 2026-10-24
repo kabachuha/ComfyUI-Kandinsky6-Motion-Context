@@ -1,8 +1,8 @@
 {
   "id": "k6-motion-context-chain",
   "revision": 0,
-  "last_node_id": 20,
-  "last_link_id": 25,
+  "last_node_id": 21,
+  "last_link_id": 26,
   "nodes": [
     {
       "id": 1,
@@ -726,7 +726,9 @@
         {
           "name": "VIDEO",
           "type": "VIDEO",
-          "links": []
+          "links": [
+            26
+          ]
         }
       ]
     },
@@ -784,6 +786,40 @@
       ],
       "inputs": [],
       "outputs": []
+    },
+    {
+      "id": 21,
+      "type": "SaveVideo",
+      "pos": [
+        3210,
+        0
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "properties": {},
+      "widgets_values": [
+        "k6_clip",
+        "auto"
+      ],
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "links": []
+        }
+      ]
     }
   ],
   "links": [
@@ -986,6 +1022,14 @@
       18,
       1,
       "AUDIO"
+    ],
+    [
+      26,
+      18,
+      0,
+      21,
+      0,
+      "VIDEO"
     ]
   ],
   "groups": [

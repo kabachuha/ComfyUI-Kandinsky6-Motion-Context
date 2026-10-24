@@ -71,7 +71,7 @@ LoadLatent (prev clip) ---+                   +--> Kandinsky6PiFlowGuider
                           |                              |
 SaveLatent (this clip) <--- SamplerCustomAdvanced <------+
                           |
-                          +--> VAEDecode ─> K6 Trim ─> Create Video / save
+                          +--> VAEDecode ─> K6 Trim ─> Create Video ─> Save Video
                           +--> VAEDecodeAudio ┘
 
 Motion Context trim_frames / trim_samples --> Trim
@@ -121,6 +121,11 @@ chained graphs); `Chain` is Approve on a loop, `segments` caps how many clips
 it runs (0 = until Stop), `Reset` sets Load 0 / Save 1 / clip_index 0,
 `Clear latents` deletes the numbered slots. Click `Reset` before a fresh
 chain so the first clip plays the start of the track.
+
+`Save Video` (after `Create Video`) is what writes the per-clip mp4s to the
+output folder (`Create Video` only builds the video object; without a save
+node the decode chain is never executed). The example workflow's prefix is
+`k6_clip`, so clip N lands at `output/k6_clip_000N+1_.mp4`.
 
 ## Tests
 
