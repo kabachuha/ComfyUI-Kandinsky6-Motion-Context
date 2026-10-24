@@ -131,3 +131,11 @@ python -m pytest custom_nodes/ComfyUI-Kandinsky6-Motion-Context/tests -v --impor
 
 `--import-mode=importlib` is needed because the pack folder's hyphen keeps
 pytest's default mode from resolving the test modules.
+
+## End-to-end verification
+
+`e2e/` holds the three-process harness (VAE-only prep, DiT-only rollout,
+VAE-only decode) that ran a 3-clip chain against a real speech track, and
+`e2e/RESULTS.md` records the setup, the per-clip and full-chain checks
+(bit-exact pinned audio, A/V drift, track gaps, mel and video-seam
+correlation), and the measured numbers.

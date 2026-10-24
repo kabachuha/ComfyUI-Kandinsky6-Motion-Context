@@ -2,3 +2,9 @@ __pycache__/
 *.pyc
 node.zip
 .ruff_cache/
+e2e/*.mp4
+e2e/*.raw
+e2e/*.f32
+e2e/*.pt
+e2e/seam_*.png
+
